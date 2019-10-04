@@ -81,22 +81,22 @@ def start_monitoring(ssh_client, interval):
 
         helpers.clear_screen()
 
-        print(f"Hostname: {hostname}")
-        print(f"Uptime: {uptime}")
+        helpers.print_header(f"Hostname: {hostname}")
+        helpers.print_header(f"Uptime: {uptime}")
 
-        print(f"\nLoad:")
-        print(f"\t{loadavg}")
+        helpers.print_header(f"\nLoad:")
+        helpers.print_body(f"\t{loadavg}")
 
-        print(f"\nMemory:")
-        print(f"\t{memory}")
+        helpers.print_header(f"\nMemory:")
+        helpers.print_body(f"\t{memory}")
 
-        print(f"\nFilesystems:")
+        helpers.print_header(f"\nFilesystems:")
         for filesystem in filesystems:
             filesystem = filesystem.split()
             if not len(filesystem[2]) == 1:
-                print(f"\t{filesystem[5]}: {filesystem[2]} used out of {filesystem[1]}")
+                helpers.print_body(f"\t{filesystem[5]}: {filesystem[2]} used out of {filesystem[1]}")
 
-        print(f"\nNetwork Interfaces:")
-        print(f"\t{networks}")
+        helpers.print_header(f"\nNetwork Interfaces:")
+        helpers.print_body(f"\t{networks}")
 
         sleep(interval)

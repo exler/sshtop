@@ -3,8 +3,6 @@
 
 import argparse
 
-
-
 try:
     from paramiko import SSHClient, ssh_exception
 
