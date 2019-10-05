@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import argparse
@@ -6,13 +5,13 @@ import argparse
 try:
     from paramiko import SSHClient, ssh_exception
 
-    from monitor import start_monitoring
+    from sshtop import monitor
 except ImportError:
     print("[!] Failed to import necessary packages. Please install them first.")
     raise SystemExit(1)
-    
 
-if __name__ == "__main__":
+
+def connection():
     parser = argparse.ArgumentParser(description="Remote server monitoring over SSH.")
     parser.add_argument('-i', '--interval', default=5, type=int,
                         help="Refresh interval in seconds.")
@@ -48,6 +47,6 @@ if __name__ == "__main__":
         raise SystemExit(1)
 
     try:
-        start_monitoring(client, args.interval)
+        monitor.start_monitoring(client, args.interval)
     except KeyboardInterrupt:
         raise SystemExit(0)

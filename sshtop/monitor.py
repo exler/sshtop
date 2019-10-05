@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
+
 from time import sleep
 
-import helpers
+from sshtop import helpers
 
 def get_hostname(ssh_client):
     stdout = ssh_client.exec_command('hostname')[1]
