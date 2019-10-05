@@ -3,7 +3,7 @@
 import argparse
 
 try:
-    from paramiko import SSHClient, ssh_exception
+    from paramiko import SSHClient, ssh_exception, AutoAddPolicy
 
     from sshtop import monitor
 except ImportError:
@@ -33,6 +33,7 @@ def connection():
 
     client = SSHClient()
     client.load_system_host_keys()
+    client.set_missing_host_key_policy(AutoAddPolicy)
 
     try:
         client.connect(hostname, port=args.port,
@@ -49,4 +50,5 @@ def connection():
     try:
         monitor.start_monitoring(client, args.interval)
     except KeyboardInterrupt:
+        client.close()
         raise SystemExit(0)
