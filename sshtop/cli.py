@@ -14,9 +14,9 @@ except ImportError:
 
 def connection():
     parser = argparse.ArgumentParser(description="Remote server monitoring over SSH.")
+    parser.add_argument("host", help="SSH server to connect to, with optional username. Formatted as: user@host")
     parser.add_argument("-i", "--interval", default=5, type=int, help="Refresh interval in seconds.")
     parser.add_argument("-k", "--private-key-file", help="PEM-formatted private key file to authenticate with.")
-    parser.add_argument("host", help="SSH server to connect to, with optional username. Formatted as: user@host")
     parser.add_argument(
         "-p", "--port", default=22, type=int, help="Port on which the SSH should try to connect to. Defaults to 22."
     )
