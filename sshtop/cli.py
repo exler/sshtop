@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-from getpass import getpass
+from getpass import getpass, getuser
 
 try:
     from paramiko import SSHClient, ssh_exception, AutoAddPolicy
@@ -28,7 +28,7 @@ def connection():
     if "@" in args.host:
         username, hostname = args.host.split("@")
     else:
-        username = None
+        username = getuser().lower()
         hostname = args.host
 
     client = SSHClient()
@@ -37,7 +37,7 @@ def connection():
 
     password = args.password
     if not password:
-        password = getpass("Password: ")
+        password = getpass(f"{username}@{hostname}'s password: ")
 
     try:
         client.connect(
