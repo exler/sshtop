@@ -9,7 +9,7 @@ try:
     from sshtop import monitor
 except ImportError:
     print("[!] Failed to import necessary packages. Please install them first.")
-    raise SystemExit(1)
+    exit(1)
 
 
 def connection():
@@ -50,13 +50,13 @@ def connection():
         )
     except ssh_exception.AuthenticationException:
         print("[!] Error while trying to authenticate! Please check the password or keyfile.")
-        raise SystemExit(1)
+        exit(1)
     except ssh_exception.SSHException as e:
         print(f"[!] Error while trying to estabilish a SSH session. Error: {e}")
-        raise SystemExit(1)
+        exit(1)
 
     try:
         monitor.start_monitoring(client, args.interval)
     except KeyboardInterrupt:
         client.close()
-        raise SystemExit(0)
+        exit(0)
