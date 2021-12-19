@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sshtop"
-version = "2.0.0"
+version = "2.0.1"
 description = "Remote server monitoring tool over SSH"
 authors = ["Kamil Marut <kamil@kamilmarut.com>"]
 license = "MIT"
