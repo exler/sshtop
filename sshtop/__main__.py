@@ -1,7 +1,11 @@
 import argparse
 from getpass import getpass, getuser
 
-from paramiko.ssh_exception import AuthenticationException, SSHException
+from paramiko.ssh_exception import (
+    AuthenticationException,
+    NoValidConnectionsError,
+    SSHException,
+)
 
 from sshtop.monitor import RemoteMonitor
 from sshtop.ssh import SSH
@@ -27,6 +31,9 @@ def main() -> None:
     except AuthenticationException:
         password = getpass(f"{username}@{hostname}'s password: ")
         client.connect(hostname, port=args.port, username=username, password=password)
+    except NoValidConnectionsError:
+        print(f"Unable to connect to port {args.port} on {hostname}")
+        exit(1)
     except SSHException as e:
         print(e)
         exit(1)
