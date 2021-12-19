@@ -1,96 +1,39 @@
-# -*- coding: utf-8 -*-
-
 from time import sleep
 
-from sshtop import helpers
+from colorama import Fore, Style
+
+from sshtop.commands import IPCommand, LoadAvgCommand, MemoryCommand, UptimeCommand
+from sshtop.ssh import SSH
+from sshtop.utils import clear_terminal
 
 
-def get_hostname(ssh_client):
-    stdout = ssh_client.exec_command("hostname")[1]
+class RemoteMonitor:
+    def __init__(self, ssh_client: SSH) -> None:
+        self.client = ssh_client
 
-    return stdout.read().decode("utf-8").rstrip("\n\r")
+        self.c_uptime = UptimeCommand()
+        self.c_loadavg = LoadAvgCommand()
+        self.c_memory = MemoryCommand()
+        self.c_ip = IPCommand()
 
+    def start(self) -> None:
+        try:
 
-def get_uptime(ssh_client):
-    stdout = ssh_client.exec_command("/usr/bin/cut -d. -f1 /proc/uptime")[1]
+            ips = self.c_ip.parse(self.client.exec(self.c_ip))
 
-    up = int(stdout.read().decode("utf-8"))
-    secs = up % 60
-    mins = int((up / 60) % 60)
-    hours = int((up / 3600) % 24)
-    days = int(up / 86400)
+            while True:
+                uptime = self.c_uptime.parse(self.client.exec(self.c_uptime))
+                loadavg = self.c_loadavg.parse(self.client.exec(self.c_loadavg))
+                free_memory, total_memory = self.c_memory.parse(self.client.exec(self.c_memory))
 
-    return f"{days} days, {hours}h{mins}m{secs}s"
+                clear_terminal()
+                print(Fore.YELLOW + f"Uptime: {uptime[3]} days, {uptime[2]}h{uptime[1]}m{uptime[0]}s")
+                print(Fore.YELLOW + f"Load averages: {loadavg[0]}, {loadavg[1]}, {loadavg[2]}  (1, 5, 15 min)")
+                print(Fore.YELLOW + f"Memory: {free_memory:.2f}MB (Free) / {total_memory:.2f}MB (Total)")
+                print(Fore.YELLOW + "IP Addresses:\n\t" + Fore.LIGHTYELLOW_EX + "\n\t".join([ip for ip in ips]))
 
+                print(Style.RESET_ALL)
+                sleep(5)
 
-def get_loadavg(ssh_client):
-    stdout = ssh_client.exec_command("cat /proc/loadavg")[1]
-
-    loadavg = stdout.read().decode("utf-8").rstrip("\n\r").split()
-
-    return f"{loadavg[0]}, {loadavg[1]}, {loadavg[2]}  (1, 5, 15 min)"
-
-
-def get_memory(ssh_client):
-    stdout = ssh_client.exec_command("cat /proc/meminfo")[1]
-
-    memory = stdout.read().decode("utf-8").split("\n")
-    memfree = int(memory[1].split()[1]) / 1024
-    memtotal = int(memory[0].split()[1]) / 1024
-    swapfree = int(memory[15].split()[1])
-    swaptotal = int(memory[14].split()[1])
-    buffers = int(memory[3].split()[1]) / 1024
-    cached = int(memory[4].split()[1]) / 1024
-
-    return f"""ram: {memfree:.2f}MB (Free) / {memtotal:.2f}MB (Total)
-        swap: {swapfree:.2f}kB (Free) / {swaptotal:.2f}kB (Total)
-        buffers: {buffers:.2f}MB
-        cached: {cached:.2f}MB"""
-
-
-def get_filesystems(ssh_client):
-    stdout = ssh_client.exec_command("df -h")[1]
-
-    filesystems = stdout.read().decode("utf-8").split("\n")[1:-1]
-
-    return filesystems
-
-
-def get_ip_addresses(ssh_client):
-    stdout = ssh_client.exec_command(f"hostname -I")[1]
-    ips = stdout.read().decode("utf-8").split()
-
-    return "\n\t".join(ips)
-
-
-def start_monitoring(ssh_client, interval):
-    hostname = get_hostname(ssh_client)
-
-    while True:
-        uptime = get_uptime(ssh_client)
-        loadavg = get_loadavg(ssh_client)
-        memory = get_memory(ssh_client)
-        filesystems = get_filesystems(ssh_client)
-        ip_addresses = get_ip_addresses(ssh_client)
-
-        helpers.clear_screen()
-
-        helpers.print_header(f"Hostname: {hostname}")
-        helpers.print_header(f"Uptime: {uptime}")
-
-        helpers.print_header(f"\nLoad:")
-        helpers.print_body(f"\t{loadavg}")
-
-        helpers.print_header(f"\nMemory:")
-        helpers.print_body(f"\t{memory}")
-
-        helpers.print_header(f"\nFilesystems:")
-        for filesystem in filesystems:
-            filesystem = filesystem.split()
-            if not len(filesystem[2]) == 1:
-                helpers.print_body(f"\t{filesystem[5]}: {filesystem[2]} used out of {filesystem[1]}")
-
-        helpers.print_header(f"\nIP Addresses:")
-        helpers.print_body(f"\t{ip_addresses}")
-
-        sleep(interval)
+        except KeyboardInterrupt:
+            return

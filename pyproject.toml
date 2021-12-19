@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "sshtop"
+version = "2.0.0"
+description = "Remote server monitoring tool over SSH"
+authors = ["Kamil Marut <kamil@kamilmarut.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/exler/sshtop"
+repository = "https://github.com/exler/sshtop"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Environment :: Console",
+    "Topic :: System :: Monitoring",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/exler/sshtop/issues"
+
+[tool.poetry.dependencies]
+python = "^3.6.2"
+paramiko = "^2.8.1"
+colorama = "^0.4.4"
+
+[tool.poetry.dev-dependencies]
+black = "^21.12b0"
+isort = "^5.10.1"
+bandit = "^1.7.1"
+flake8 = "^4.0.1"
+flake8-annotations = "^2.7.0"
+mypy = "^0.920"
+types-paramiko = "^2.8.5"
+
+[tool.poetry.scripts]
+sshtop = "sshtop.__main__:main"
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.isort]
+profile = "black"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

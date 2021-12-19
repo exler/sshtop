@@ -1,6 +1,6 @@
 # sshtop
 
-`sshtop` connect over SSH to a remote system and displays system metrics (CPU load averages, memory, disks, network interfaces) by running simple Unix commands.
+`sshtop` connects to remote systems over SSH and gathers common information about the system.
 
 Only Linux systems can be monitored at this moment.
 
@@ -14,10 +14,10 @@ $ pip install sshtop
 ## Usage
 
 ```bash
-$ sshtop host [-k PRIVATE_KEY_FILE] [-p PORT] [-i INTERVAL] [--password PASSWORD]
+$ sshtop [-h] [-p PORT] [-i IDENTITY_FILE] destination
 ```
 
-If a valid PEM-formatted keyfile has not been supplied, `sshtop` will automatically search for a valid key through an SSH agent.
+If a keyfile has not been supplied, `sshtop` will automatically search for a valid key through a SSH agent.
 
 ## License
 
